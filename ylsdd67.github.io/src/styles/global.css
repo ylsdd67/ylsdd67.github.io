@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+	color-scheme: light;
+}
+
+html.dark {
+	color-scheme: dark;
+}
+
+html {
+	text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+html:lang(zh-Hans) body,
+html:lang(zh) body {
+	font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Noto Sans CJK SC", "Source Han Sans SC", Arial, sans-serif;
+}
+
+::selection {
+	background: rgb(14 165 233 / 0.25);
+}
+
+html.dark ::selection {
+	background: rgb(125 211 252 / 0.25);
+}

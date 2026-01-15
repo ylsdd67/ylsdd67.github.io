@@ -1,0 +1,84 @@
+---
+import { getCollection } from 'astro:content';
+
+const { locale, limit = 8 } = Astro.props as { locale: 'zh' | 'en'; limit?: number };
+
+const pageSize = 10;
+
+const all = await getCollection('blog');
+
+const filteredSorted = all
+	.filter((p) => (locale === 'zh' ? p.data.lang === 'zh' : true))
+	.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+
+const posts = filteredSorted.slice(0, limit);
+const totalPages = Math.max(1, Math.ceil(filteredSorted.length / pageSize));
+
+const title = locale === 'zh' ? '最新文章' : 'Recent Posts';
+const summaryFallback = locale === 'zh' ? '（暂无摘要）' : '(No summary yet)';
+const pagesLabel = locale === 'zh' ? '页码' : 'Pages';
+---
+
+<section class="mt-12">
+	<div class="flex items-baseline justify-between gap-4">
+		<h2 class="text-base font-semibold tracking-tight">{title}</h2>
+		<a class="text-sm text-slate-600 hover:text-slate-950 dark:text-slate-400 dark:hover:text-slate-100" href="/blog">/blog →</a>
+	</div>
+
+	{posts.length === 0 ? (
+		<p class="mt-5 text-sm text-slate-600 dark:text-slate-400">No posts yet.</p>
+	) : (
+		<ul class="mt-5">
+			{posts.map((post) => (
+				<li class="rounded-2xl bg-slate-50/70 px-0 py-5 transition-colors hover:bg-slate-100 dark:bg-slate-950/20 dark:hover:bg-slate-950/35">
+					<article class="w-full">
+						<div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+							<p class="font-mono text-xs text-slate-500 dark:text-slate-400">{post.data.pubDate.toISOString().slice(0, 10)}</p>
+							{post.data.tags?.length ? (
+								<p class="font-mono text-xs text-slate-500 dark:text-slate-500">#{post.data.tags.join(' #')}</p>
+							) : null}
+						</div>
+
+						<a class="group block" href={`/blog/${post.slug}/`}>
+							<h3 class="font-mono text-base text-slate-800 group-hover:text-slate-950 dark:text-slate-200 dark:group-hover:text-slate-100 md:text-lg">
+								$ {post.data.title}
+							</h3>
+							<p class="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+								{post.data.description ?? summaryFallback}
+							</p>
+						</a>
+					</article>
+				</li>
+			))}
+		</ul>
+	)}
+
+	{totalPages > 1 ? (
+		<nav class="mt-6 flex flex-wrap items-center justify-between gap-3" aria-label={pagesLabel}>
+			<p class="text-xs text-slate-500 dark:text-slate-400">
+				{pagesLabel}: 1 / {totalPages}
+			</p>
+			<div class="flex flex-wrap items-center gap-2">
+				{Array.from({ length: totalPages }, (_, idx) => idx + 1).map((page) => {
+					const href = page === 1 ? '/blog/' : `/blog/page/${page}/`;
+					const isCurrent = page === 1;
+
+					return (
+						<a
+							href={href}
+							aria-current={isCurrent ? 'page' : undefined}
+							class={
+								'rounded-md px-2 py-1 font-mono text-xs transition-colors ' +
+								(isCurrent
+									? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-950'
+									: 'text-slate-600 hover:bg-slate-100 hover:text-slate-950 dark:text-slate-400 dark:hover:bg-slate-800/60 dark:hover:text-slate-100')
+							}
+						>
+							{page}
+						</a>
+					);
+				})}
+			</div>
+		</nav>
+	) : null}
+</section>

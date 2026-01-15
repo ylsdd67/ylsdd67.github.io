@@ -1,0 +1,53 @@
+---
+import '../styles/global.css';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+
+const { title, description, locale } = Astro.props as {
+	title: string;
+	description?: string;
+	locale: 'zh' | 'en';
+};
+---
+
+<!doctype html>
+<html lang={locale === 'zh' ? 'zh-Hans' : 'en'}>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="icon" href="/favicon-light.svg" type="image/svg+xml" data-favicon />
+		<title>{title}</title>
+		{description ? <meta name="description" content={description} /> : null}
+		<script is:inline>
+			(() => {
+				const setFavicon = () => {
+					const link = document.querySelector('link[data-favicon]');
+					if (!(link instanceof HTMLLinkElement)) return;
+					const dark = document.documentElement.classList.contains('dark');
+					const next = dark ? '/favicon-dark.svg' : '/favicon-light.svg';
+					if (link.getAttribute('href') !== next) link.setAttribute('href', next);
+				};
+
+				try {
+					const storageKey = 'theme';
+					const stored = localStorage.getItem(storageKey);
+					const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches;
+					const theme = stored === 'dark' || stored === 'light' ? stored : (prefersDark ? 'dark' : 'light');
+					document.documentElement.classList.toggle('dark', theme === 'dark');
+					document.documentElement.style.colorScheme = theme;
+					setFavicon();
+					new MutationObserver(setFavicon).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+				} catch {
+					// ignore
+				}
+			})();
+		</script>
+	</head>
+	<body class="min-h-dvh font-sans bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+		<Header locale={locale} />
+		<main class="mx-auto max-w-6xl px-4 py-10">
+			<slot />
+		</main>
+		<Footer />
+	</body>
+</html>

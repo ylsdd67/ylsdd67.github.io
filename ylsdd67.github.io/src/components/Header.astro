@@ -1,0 +1,94 @@
+---
+const { locale } = Astro.props as { locale: 'zh' | 'en' };
+
+const base = locale === 'en' ? '/en' : '';
+const otherBase = locale === 'en' ? '' : '/en';
+const switchHref = otherBase || '/';
+const langEmoji = '🌐';
+const langAriaLabel = locale === 'en' ? 'Switch language to Chinese' : 'Switch language to English';
+
+const blogLabel = locale === 'zh' ? '文章列表' : 'Archive';
+---
+
+<header class="sticky top-0 z-50 border-b border-slate-200 bg-white/75 backdrop-blur dark:border-slate-800 dark:bg-slate-950/70">
+	<div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
+		<a href={`${base}/`} class="flex items-center gap-3">
+			<span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900 text-white dark:bg-slate-100">
+				<svg
+					width="20"
+					height="20"
+					viewBox="0 0 24 24"
+					fill="none"
+					xmlns="http://www.w3.org/2000/svg"
+					aria-hidden="true"
+					class="text-slate-50 dark:text-slate-950"
+				>
+					<path d="M7 6 L13 12 L7 18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+					<path d="M14.5 17.5 H20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+				</svg>
+			</span>
+			<span class="font-semibold tracking-tight text-slate-900 dark:text-slate-100">压力是多的 <span class="text-slate-400">|</span> <span class="text-brand-700 dark:text-brand-300">Automation</span></span>
+		</a>
+
+		<nav class="flex items-center gap-4 text-sm">
+			<a class="text-slate-700 hover:text-slate-950 dark:text-slate-300 dark:hover:text-slate-100" href={`${base}/about`}>Bio</a>
+			<a class="text-slate-700 hover:text-slate-950 dark:text-slate-300 dark:hover:text-slate-100" href={`${base}/tutorials`}>Tutorials</a>
+			<a class="text-slate-700 hover:text-slate-950 dark:text-slate-300 dark:hover:text-slate-100" href="/blog">{blogLabel}</a>
+			<a class="text-slate-700 hover:text-slate-950 dark:text-slate-300 dark:hover:text-slate-100" href={`${base}/contact`}>Contact</a>
+
+			<button
+				type="button"
+				data-theme-toggle
+				class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-base leading-none text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900/40 dark:text-slate-200 dark:hover:bg-slate-800/50"
+				aria-label="Toggle theme"
+				aria-pressed="false"
+				title="Toggle theme"
+			>
+				<span data-theme-icon aria-hidden="true">🌙</span>
+				<span class="sr-only">Toggle theme</span>
+			</button>
+
+			<a
+				class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-base leading-none text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900/40 dark:text-slate-200 dark:hover:bg-slate-800/50"
+				href={switchHref}
+				aria-label={langAriaLabel}
+				title={langAriaLabel}
+			>
+				<span aria-hidden="true">{langEmoji}</span>
+				<span class="sr-only">{langAriaLabel}</span>
+			</a>
+		</nav>
+	</div>
+</header>
+
+<script is:inline>
+	(() => {
+		const button = document.querySelector('[data-theme-toggle]');
+		if (!(button instanceof HTMLButtonElement)) return;
+		const icon = button.querySelector('[data-theme-icon]');
+
+		const storageKey = 'theme';
+		const isDark = () => document.documentElement.classList.contains('dark');
+		const applyLabel = () => {
+			const dark = isDark();
+			if (icon) icon.textContent = dark ? '☀️' : '🌙';
+			button.setAttribute('aria-pressed', String(dark));
+			button.setAttribute('aria-label', dark ? 'Switch to light theme' : 'Switch to dark theme');
+			button.setAttribute('title', dark ? 'Switch to light theme' : 'Switch to dark theme');
+		};
+
+		button.addEventListener('click', () => {
+			const next = isDark() ? 'light' : 'dark';
+			document.documentElement.classList.toggle('dark', next === 'dark');
+			document.documentElement.style.colorScheme = next;
+			try {
+				localStorage.setItem(storageKey, next);
+			} catch {
+				// ignore
+			}
+			applyLabel();
+		});
+
+		applyLabel();
+	})();
+</script>

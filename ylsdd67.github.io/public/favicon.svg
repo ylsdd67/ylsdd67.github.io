@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Terminal mark">
+    <defs>
+        <style>
+            :root {
+                --bg: #0f172a;     /* slate-900 */
+                --fg: #e2e8f0;     /* slate-200 */
+                --accent: #38bdf8; /* sky-400 */
+            }
+            @media (prefers-color-scheme: dark) {
+                :root {
+                    --bg: #e2e8f0;
+                    --fg: #0f172a;
+                    --accent: #0369a1; /* sky-700 */
+                }
+            }
+        </style>
+    </defs>
+
+    <rect x="10" y="10" width="108" height="108" rx="26" fill="var(--bg)"/>
+
+    <!-- Prompt chevron: > -->
+    <path d="M44 44 L68 64 L44 84" fill="none" stroke="var(--accent)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" />
+
+    <!-- Cursor underscore: _ -->
+    <rect x="72" y="78" width="32" height="10" rx="5" fill="var(--fg)"/>
+</svg>

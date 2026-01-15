@@ -1,0 +1,13 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ContactLinks from '../../components/ContactLinks.astro';
+---
+
+<BaseLayout title="Contact" description="Contact and collaboration" locale="en">
+	<h1 class="text-3xl font-semibold tracking-tight">Contact</h1>
+	<p class="mt-3 text-slate-700 dark:text-slate-300">Happy to connect about test automation, engineering productivity, tutorials, or opportunities.</p>
+
+	<section class="mt-10">
+		<ContactLinks showWechatQr={true} />
+	</section>
+</BaseLayout>
